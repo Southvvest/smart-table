@@ -1,13 +1,22 @@
-import {sortCollection, sortMap} from "../lib/sort.js";
+// import {sortCollection, sortMap} from "../lib/sort.js"; - более не требуется
+
+import { sortMap } from "../lib/sort";
+
+// import {sortCollection, sortMap} from "../lib/sort.js"; - более не требуется
+
 
 export function initSorting(columns) {
-    return (data, state, action) => {
+    return (query, state, action) => {
         let field = null;
         let order = null;
 
         if (action && action.name === 'sort') {
             // @todo: #3.1 — запомнить выбранный режим сортировки
             action.dataset.value = sortMap[action.dataset.value];    // Сохраним и применим как текущее следующее состояние из карты
+																		
+																	 
+			 
+																								  
             field = action.dataset.field;                            // Информация о сортируемом поле есть также в кнопке
             order = action.dataset.value;                            // Направление заберём прямо из датасета для точности 
 
@@ -15,6 +24,9 @@ export function initSorting(columns) {
             columns.forEach(column => {                                    // Перебираем элементы (в columns у нас массив кнопок)
                 if (column.dataset.field !== action.dataset.field) {    // Если это не та кнопка, что нажал пользователь
                     column.dataset.value = 'none';                        // тогда сбрасываем её в начальное состояние
+						
+																										 
+												 
                 }
             });
 
@@ -28,6 +40,8 @@ export function initSorting(columns) {
             });
         }
 
-        return sortCollection(data, field, order);
+        const sort = (field && order !== 'none') ? `${field}:${order}` : null; // сохраним в переменную параметр сортировки в виде field:direction
+
+        return sort ? Object.assign({}, query, { sort }) : query; // по общему принципу, если есть сортировка, добавляем, если нет, то не трогаем query
     }
 }
